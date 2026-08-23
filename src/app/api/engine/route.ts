@@ -46,8 +46,31 @@ function kbContext() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const stage = body.stage as "intent" | "clarify" | "formulate";
+  const stage = body.stage as "intent" | "clarify" | "formulate" | "gap";
   try {
+    if (stage === "gap") {
+      const topic = String(body.input || "").slice(0, 2000);
+      if (!KEY) {
+        return NextResponse.json({
+          topic,
+          known: [], uncertain: [], gaps: [], suggestedQuestions: [],
+          note: "Gap analysis requires the AI engine (API key not configured)."
+        });
+      }
+      const out = await callLLM(
+        `You are an evidence-mapping engine for Obstetrics, Gynecology and Infertility.
+Given a clinical topic, map the current evidence landscape:
+- specialty: one of ${Object.keys(KB).join(", ")}
+- known: 4-6 points well supported by RCTs/systematic reviews (established knowledge)
+- uncertain: 2-4 areas where evidence is conflicting, low-quality, or inconclusive
+- gaps: 4-6 genuine research gaps, each {gap, why} where why explains briefly why the gap matters clinically
+- suggestedQuestions: exactly 4 answerable PICO-format research questions targeting the most important gaps, each {question, rationale}
+Be rigorous: only claim a gap if high-quality evidence is genuinely lacking. Respond ONLY with JSON.`,
+        { topic }
+      );
+      return NextResponse.json({ ...out, topic });
+    }
+
     if (stage === "intent") {
       const input = String(body.input || "").slice(0, 2000);
       if (KEY) {
@@ -76,6 +99,7 @@ Respond ONLY with JSON.`, { input, knowledgeBase: kbContext() });
 The clinician's original uncertainty and the current analysis are given. Ask the SINGLE most important next clarification question needed to formulate an answerable clinical question.
 Prefer asking about: outcome specificity first (e.g. live birth vs pregnancy), then population details, then comparator.
 Clinically meaningful outcomes for this specialty in order of preference: ${JSON.stringify(KB[analysis.specialty].outcomesRanked)}.
+Provide 8 to 10 diverse, clinically relevant options covering different angles (different outcomes, populations, comparators, or timeframes) so the clinician has real choices.
 Respond ONLY with JSON:
 {"done": false, "field": "<condition|intervention|comparator|outcome>", "questionText": "...", "options": ["...", "..."], "allowFreeText": true}
 Set done=true with empty strings when everything essential is known.`,
@@ -94,7 +118,8 @@ Set done=true with empty strings when everything essential is known.`,
 Using the analysis and clarified answers, produce:
 - framework: the question framework name
 - elements: array of {label, value} for each framework element (PICO/PICOT/PECO/diagnostic)
-- finalQuestion: ONE polished, answerable clinical question sentence
+- finalQuestion: ONE polished, answerable clinical question sentence (the recommended default)
+- variants: EXACTLY 4 alternative formulations of the question, each {question, rationale} where rationale (one short sentence) explains the different clinical angle — vary by primary outcome (e.g. live birth vs ongoing pregnancy vs cumulative live birth), population detail, or comparator. Variant 1 may equal finalQuestion.
 - scores: array of {name, value} scoring each element 0-20 plus Specificity (max total = number of items x 20)
 - advisories: array of short warnings, e.g. if an outcome like "pregnancy" is not patient-centered suggest live birth; flag vague comparators or populations
 - searchTerms: {population, intervention, outcome} optimized for PubMed searching.

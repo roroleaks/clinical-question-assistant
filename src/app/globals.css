@@ -35,6 +35,21 @@ table.pico { width: 100%; border-collapse: collapse; }
 table.pico td { border: 1px solid var(--border); padding: 9px 12px; vertical-align: top; font-size: .92rem; }
 table.pico td:first-child { width: 175px; font-weight: 700; color: var(--accent); background: var(--accent-light); }
 .final-q { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 13px 15px; border-radius: 0 8px 8px 0; font-size: 1.03rem; margin-top: 12px; }
+.variants { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+@media (max-width: 700px) { .variants { grid-template-columns: 1fr; } }
+.variant-card { display: flex; flex-direction: column; gap: 6px; text-align: left; background: #fff; border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; font-family: inherit; font-size: .88rem; color: var(--ink); transition: border-color .15s, background .15s; }
+.variant-card:hover { border-color: var(--accent); }
+.variant-card.selected { border-color: var(--accent); background: var(--accent-light); }
+.v-num { font-weight: 700; color: var(--accent); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; }
+.v-q { line-height: 1.45; }
+.v-r { color: var(--muted); font-size: .8rem; }
+.modes { display: flex; gap: 8px; margin-bottom: 14px; }
+.mode-tab { flex: 1; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: .9rem; font-weight: 600; color: var(--muted); cursor: pointer; }
+.mode-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.sec-h { font-size: .95rem; margin: 14px 0 6px; }
+.gap-list { margin-left: 20px; font-size: .92rem; display: flex; flex-direction: column; gap: 5px; }
+.mini-btn { align-self: flex-start; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: .8rem; cursor: pointer; margin-top: 4px; }
+.mini-btn:hover { background: #0b5555; }
 .score-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
 .score-name { width: 160px; font-size: .86rem; }
 .bar-bg { flex: 1; height: 9px; background: #edf0f4; border-radius: 999px; overflow: hidden; }

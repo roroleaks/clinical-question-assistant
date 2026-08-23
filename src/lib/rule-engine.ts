@@ -149,10 +149,20 @@ export function ruleFormulate(analysis: Analysis, answered: Record<string, strin
   if (/^pregnancy$|pregnancy rate/i.test(out)) {
     advisories.push('"Pregnancy" may be insufficiently specific. Consider live birth or ongoing pregnancy as the primary outcome.');
   }
+  const spec = analysis.specialty ? KB[analysis.specialty] : null;
+  const altOutcomes = (spec ? spec.outcomesRanked : []).filter(o => o.toLowerCase() !== out.toLowerCase()).slice(0, 3);
+  const variants = [
+    { question: finalQuestion, rationale: "Recommended default — uses your chosen outcome." },
+    ...altOutcomes.map(o => ({
+      question: finalQuestion.replace(new RegExp(out.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), o),
+      rationale: `Same question with "${o}" as the primary outcome.`
+    }))
+  ].slice(0, 4);
   return {
     framework: analysis.framework,
     elements,
     finalQuestion,
+    variants,
     scores,
     advisories,
     searchTerms: { population: cond, intervention: iv, outcome: out },

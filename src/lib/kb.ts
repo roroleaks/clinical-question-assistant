@@ -119,6 +119,7 @@ export interface Formulation {
   framework: string;
   elements: { label: string; value: string }[];
   finalQuestion: string;
+  variants?: { question: string; rationale: string }[];
   scores: { name: string; value: number }[];
   advisories: string[];
   searchTerms: { population: string; intervention: string; outcome: string };
