@@ -1,20 +1,75 @@
-# AIPICO Launcher - Clinical Question Assistant
+# AI PICO Launcher - Clinical Question Assistant
+# (c) Dr Raouf Roshdy 2026 - All rights reserved
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $AppDir = "$env:LOCALAPPDATA\AIPICO"
 $Repo = "https://github.com/roroleaks/clinical-question-assistant.git"
 $ServerUrl = "http://localhost:3456"
+$DisclaimerFile = "$AppDir\.disclaimer-accepted"
 
 function Write-Step($msg) { Write-Host "`n[$([char]0x25B6)] $msg" -ForegroundColor Cyan }
 function Write-Ok($msg) { Write-Host "  [OK] $msg" -ForegroundColor Green }
 function Write-Info($msg) { Write-Host "  $msg" -ForegroundColor Gray }
 
-Write-Host ""
-Write-Host "  ==========================================" -ForegroundColor Cyan
-Write-Host "     AI PICO - Clinical Question Assistant  " -ForegroundColor White
-Write-Host "     Dr Raouf Roshdy (c) 2026               " -ForegroundColor Gray
-Write-Host "  ==========================================" -ForegroundColor Cyan
+function Show-Banner {
+  Clear-Host
+  Write-Host ""
+  Write-Host "  ==================================================" -ForegroundColor Cyan
+  Write-Host "                                                    " -ForegroundColor Cyan
+  Write-Host "      A I   P I C O                                " -ForegroundColor White
+  Write-Host "      Clinical Question Assistant                   " -ForegroundColor White
+  Write-Host "                                                    " -ForegroundColor Cyan
+  Write-Host "      Created by Dr Raouf Roshdy                    " -ForegroundColor Yellow
+  Write-Host "      (c) 2026 - All rights reserved                " -ForegroundColor Gray
+  Write-Host "                                                    " -ForegroundColor Cyan
+  Write-Host "  ==================================================" -ForegroundColor Cyan
+}
+
+function Show-Disclaimer {
+  Clear-Host
+  Write-Host ""
+  Write-Host "  ==================================================" -ForegroundColor Yellow
+  Write-Host "               IMPORTANT DISCLAIMER                 " -ForegroundColor Yellow
+  Write-Host "  ==================================================" -ForegroundColor Yellow
+  Write-Host ""
+  Write-Host "  This software is provided for EDUCATIONAL and" -ForegroundColor White
+  Write-Host "  ACADEMIC RESEARCH purposes only." -ForegroundColor White
+  Write-Host ""
+  Write-Host "  1. NOT a medical device. NOT certified for" -ForegroundColor Gray
+  Write-Host "     clinical use or patient care decisions." -ForegroundColor Gray
+  Write-Host "  2. AI-generated content may contain errors," -ForegroundColor Gray
+  Write-Host "     omissions, or outdated information." -ForegroundColor Gray
+  Write-Host "  3. Always verify formulated questions," -ForegroundColor Gray
+  Write-Host "     references, and evidence against original" -ForegroundColor Gray
+  Write-Host "     sources before any professional use." -ForegroundColor Gray
+  Write-Host "  4. No patient data should be entered into" -ForegroundColor Gray
+  Write-Host "     this application." -ForegroundColor Gray
+  Write-Host "  5. Provided 'as is' without warranty of any" -ForegroundColor Gray
+  Write-Host "     kind. The author accepts no liability for" -ForegroundColor Gray
+  Write-Host "     any use of this software." -ForegroundColor Gray
+  Write-Host ""
+  Write-Host "  Creator: Dr Raouf Roshdy (c) 2026" -ForegroundColor Yellow
+  Write-Host ""
+  $answer = Read-Host "  Do you accept these terms? (Y/N)"
+  if ($answer -notmatch "^[Yy]") {
+    Write-Host "`n  Installation cancelled. The application requires accepting the disclaimer." -ForegroundColor Red
+    Read-Host "Press Enter to exit"
+    exit 0
+  }
+  if (-not (Test-Path $AppDir)) { New-Item -ItemType Directory -Path $AppDir -Force | Out-Null }
+  "Accepted $(Get-Date -Format 'yyyy-MM-dd HH:mm')" | Out-File $DisclaimerFile -Encoding utf8
+}
+
+Show-Banner
+
+# First run: disclaimer
+if (-not (Test-Path $DisclaimerFile)) {
+  Show-Disclaimer
+  Show-Banner
+  Write-Host ""
+  Write-Host "  Thank you. Starting first-time installation..." -ForegroundColor Green
+}
 
 # Step 1: Check Node.js
 Write-Step "Checking Node.js..."
@@ -34,7 +89,6 @@ if (-not $nodeOk) {
     Invoke-WebRequest -Uri "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi" -OutFile $installer -UseBasicParsing
     Start-Process msiexec.exe -ArgumentList "/i `"$installer`" /qn" -Wait
   }
-  # Refresh PATH
   $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
   try { $v = & node --version 2>$null; Write-Ok "Node.js $v installed" } catch { Write-Host "  [X] Node.js installation failed. Please install from nodejs.org and rerun." -ForegroundColor Red; Read-Host "Press Enter to exit"; exit 1 }
 }
@@ -42,7 +96,6 @@ if (-not $nodeOk) {
 # Step 2: Get/update app files
 Write-Step "Preparing application files..."
 if (-not (Test-Path $AppDir)) { New-Item -ItemType Directory -Path $AppDir -Force | Out-Null }
-
 $hasPackage = Test-Path "$AppDir\package.json"
 $hasSrc = Test-Path "$AppDir\src"
 if (-not ($hasPackage -and $hasSrc)) {
@@ -100,8 +153,10 @@ if ($existing) {
 Write-Step "Opening AI PICO..."
 Start-Process $ServerUrl
 Write-Host ""
-Write-Host "  AI PICO is running at $ServerUrl" -ForegroundColor Green
-Write-Host "  Keep this window open while using the app." -ForegroundColor Gray
-Write-Host "  Close this window to keep the server running in background." -ForegroundColor DarkGray
+Write-Host "  ==================================================" -ForegroundColor Green
+Write-Host "   AI PICO is running at $ServerUrl" -ForegroundColor Green
+Write-Host "   Created by Dr Raouf Roshdy (c) 2026" -ForegroundColor Yellow
+Write-Host "  ==================================================" -ForegroundColor Green
 Write-Host ""
+Write-Info "Keep this window open while using the app."
 Read-Host "Press Enter to close this launcher (app stays running)"
