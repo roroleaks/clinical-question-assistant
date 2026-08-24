@@ -50,6 +50,13 @@ table.pico td:first-child { width: 175px; font-weight: 700; color: var(--accent)
 .gap-list { margin-left: 20px; font-size: .92rem; display: flex; flex-direction: column; gap: 5px; }
 .mini-btn { align-self: flex-start; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: .8rem; cursor: pointer; margin-top: 4px; }
 .mini-btn:hover { background: #0b5555; }
+.free-input { flex: 1; min-width: 200px; padding: 10px 14px; font-size: .95rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; }
+.free-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.refs { margin-top: 4px; display: flex; flex-direction: column; gap: 3px; }
+.ref-link { font-size: 0.78rem; color: var(--accent); text-decoration: none; }
+.ref-link:hover { text-decoration: underline; }
+.refs-numbered { margin-left: 20px; font-size: 0.85rem; line-height: 1.7; }
+.refs-numbered li { margin-bottom: 6px; }
 .score-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
 .score-name { width: 160px; font-size: .86rem; }
 .bar-bg { flex: 1; height: 9px; background: #edf0f4; border-radius: 999px; overflow: hidden; }
