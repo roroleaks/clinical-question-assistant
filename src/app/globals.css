@@ -6,9 +6,22 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; }
 .wrap { min-height: 100vh; }
-.hdr { background: linear-gradient(135deg, #0f6b6b, #0a4a4a); color: #fff; padding: 26px 20px; text-align: center; }
-.hdr h1 { font-size: 1.4rem; font-weight: 600; }
-.hdr p { opacity: .85; font-size: .9rem; margin-top: 5px; }
+.hdr { background: linear-gradient(135deg, #0f6b6b, #0a4a4a); color: #fff; padding: 22px 20px; }
+.hdr-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; gap: 20px; }
+.hdr-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.lens-icon { color: #fff; opacity: 0.9; }
+.title-main { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
+.hdr-center { flex: 1; text-align: center; }
+.hdr-center h1 { font-size: 1.35rem; font-weight: 600; margin-bottom: 4px; }
+.hdr-center p { opacity: .85; font-size: .9rem; margin-top: 4px; }
+.hdr-right { flex-shrink: 0; }
+.author-name { font-size: .9rem; font-weight: 500; color: rgba(255,255,255,0.9); font-style: italic; white-space: nowrap; }
+@media (max-width: 768px) {
+  .hdr-inner { flex-direction: column; gap: 12px; text-align: center; }
+  .hdr-left { order: 1; }
+  .hdr-center { order: 2; }
+  .hdr-right { order: 3; }
+}
 .layout { max-width: 1100px; margin: 22px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 300px; gap: 18px; align-items: start; }
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }

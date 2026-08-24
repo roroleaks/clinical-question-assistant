@@ -16,11 +16,25 @@ export default function Home() {
     router.push(mode === "gap" ? "/gap" : "/question");
   };
 
-  return (
+return (
     <div className="wrap">
       <header className="hdr">
-        <h1>From Clinical Uncertainty to Answerable Questions</h1>
-        <p>AI-Assisted Clinical Question Formulation — Obstetrics, Gynecology &amp; Infertility</p>
+        <div className="hdr-inner">
+          <div className="hdr-left">
+            <svg className="lens-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.3-4.3"/>
+            </svg>
+            <span className="title-main">AI PICO</span>
+          </div>
+          <div className="hdr-center">
+            <h1>From Clinical Uncertainty to Answerable Questions</h1>
+            <p>AI-Assisted Clinical Question Formulation — Obstetrics, Gynecology & Infertility</p>
+          </div>
+          <div className="hdr-right">
+            <span className="author-name">Dr Raouf Roshdy</span>
+          </div>
+        </div>
       </header>
 
       <main className="solo">
