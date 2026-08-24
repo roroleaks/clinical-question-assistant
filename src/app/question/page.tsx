@@ -85,7 +85,7 @@ export default function QuestionPage() {
       setNotice("AI is busy — continuing in offline mode.");
     }
     const nc = normalizeClarify(raw, a);
-    if (log.length >= 3) { nc.done = true; nc.field = null; }
+    if (log.length >= 1) { nc.done = true; nc.field = null; }
     if (nc.done && log.length === 0) {
       const spec = a.specialty ? KB[a.specialty] : null;
       nc.done = false;
