@@ -180,28 +180,31 @@ export default function QuestionPage() {
                 {m.a && <div className="bubble user">{m.a}</div>}
               </div>
             ))}
-            {clarification && !clarification.done && busy !== "clarify" && (
-              <>
-                <div className="chips">
-                  {clarification.options.map(o => (
-                    <button key={o} className="chip" onClick={() => clarification.field && answer(clarification.field, o)}>{o}</button>
-                  ))}
-                </div>
-                <div className="row" style={{ marginTop: 10 }}>
-                  <input
-                    className="free-input"
-                    value={freeText}
-                    onChange={e => setFreeText(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter" && freeText.trim() && clarification.field) answer(clarification.field, freeText.trim()); }}
-                    placeholder="Or type your own answer…"
-                  />
-                  <button className="primary" disabled={!freeText.trim()}
-                    onClick={() => clarification.field && answer(clarification.field, freeText.trim())}>
-                    Answer ➜
-                  </button>
-                </div>
-              </>
-            )}
+{clarification && !clarification.done && busy !== "clarify" && (
+                <>
+                  <div className="chips">
+                    {clarification.options.map(o => (
+                      <button key={o} className="chip" onClick={() => {
+                        const field = clarification.field || "outcome";
+                        answer(field, o);
+                      }}>{o}</button>
+                    ))}
+                  </div>
+                  <div className="row" style={{ marginTop: 10 }}>
+                    <input
+                      className="free-input"
+                      value={freeText}
+                      onChange={e => setFreeText(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter" && freeText.trim()) answer(clarification.field || "outcome", freeText.trim()); }}
+                      placeholder="Or type your own answer…"
+                    />
+                    <button className="primary" disabled={!freeText.trim()}
+                      onClick={() => answer(clarification.field || "outcome", freeText.trim())}>
+                      Answer ➜
+                    </button>
+                  </div>
+                </>
+              )}
             {busy === "clarify" && <p className="hint">⏳ Thinking…</p>}
           </section>
         )}
