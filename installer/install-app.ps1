@@ -61,16 +61,28 @@ try {
   # 3. Dependencies
   Set-Location $AppDir
   Log "Running npm install..."
-  $out = & $npm install --no-audit --no-fund 2>&1
-  Log ($out | Out-String)
-  if ($LASTEXITCODE -ne 0) { throw "npm install failed (exit $LASTEXITCODE)" }
+  $outLog = "$env:TEMP\npm-install.log"
+  $errLog = "$env:TEMP\npm-install-err.log"
+  $proc = Start-Process -FilePath $npm -ArgumentList "install","--no-audit","--no-fund" -WorkingDirectory $AppDir -WindowStyle Hidden -PassThru -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+  if (-not $proc.WaitForExit(600000)) { $proc.Kill(); throw "npm install timed out after 10 minutes" }
+  if ($proc.ExitCode -ne 0) {
+    $errText = if (Test-Path $errLog) { Get-Content $errLog -Tail 10 | Out-String } else { "" }
+    Log "npm install failed: $errText"
+    throw "npm install failed (exit $($proc.ExitCode))"
+  }
   Log "Dependencies installed"
 
   # 4. Build
   Log "Running production build..."
-  $out = & $npm run build 2>&1
-  Log ($out | Out-String)
-  if ($LASTEXITCODE -ne 0) { throw "Build failed (exit $LASTEXITCODE)" }
+  $outLog2 = "$env:TEMP\npm-build.log"
+  $errLog2 = "$env:TEMP\npm-build-err.log"
+  $proc = Start-Process -FilePath $npm -ArgumentList "run","build" -WorkingDirectory $AppDir -WindowStyle Hidden -PassThru -RedirectStandardOutput $outLog2 -RedirectStandardError $errLog2
+  if (-not $proc.WaitForExit(300000)) { $proc.Kill(); throw "Build timed out after 5 minutes" }
+  if ($proc.ExitCode -ne 0) {
+    $errText = if (Test-Path $errLog2) { Get-Content $errLog2 -Tail 10 | Out-String } else { "" }
+    Log "Build failed: $errText"
+    throw "Build failed (exit $($proc.ExitCode))"
+  }
   Log "Build completed"
 
   Log "===== install OK ====="

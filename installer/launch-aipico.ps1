@@ -1,7 +1,9 @@
-# AI PICO - launcher: start server if not running, open browser
+# AI PICO - launcher: open browser instantly, start server in background
 $AppDir = "$env:LOCALAPPDATA\AIPICO"
 $Port = 3456
 $ServerUrl = "http://localhost:$Port"
+
+Start-Process $ServerUrl
 
 function Find-Npm {
   $cmd = Get-Command npm.cmd -ErrorAction SilentlyContinue
@@ -19,11 +21,5 @@ if (-not $running) {
   $npm = Find-Npm
   if ($npm -and (Test-Path "$AppDir\.next")) {
     Start-Process -FilePath $npm -ArgumentList "run","start","--","-p","$Port" -WorkingDirectory $AppDir -WindowStyle Hidden
-    for ($i = 0; $i -lt 20; $i++) {
-      Start-Sleep -Seconds 2
-      try { $r = Invoke-WebRequest -Uri $ServerUrl -UseBasicParsing -TimeoutSec 3; if ($r.StatusCode -eq 200) { $running = $true; break } } catch {}
-    }
   }
 }
-
-Start-Process $ServerUrl
