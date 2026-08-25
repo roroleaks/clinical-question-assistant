@@ -2,6 +2,7 @@
 ; Created by Dr Raouf Roshdy (c) 2026
 
 [Setup]
+AppId=AIPICOClinicalAssistantRaouf2026
 AppName=AI PICO — Clinical Question Assistant
 AppVersion=3.0
 AppPublisher=Dr Raouf Roshdy
@@ -29,10 +30,7 @@ Source: "launch-aipico.vbs"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\AI PICO"; Filename: "wscript.exe"; Parameters: """{app}\launch-aipico.vbs"""; IconFilename: "{app}\icon.ico"; Comment: "AI PICO — Clinical Question Assistant"
-Name: "{autodesktop}\AI PICO"; Filename: "wscript.exe"; Parameters: """{app}\launch-aipico.vbs"""; IconFilename: "{app}\icon.ico"; Tasks: desktopicon; Comment: "AI PICO — Clinical Question Assistant"
-
-[Tasks]
-Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional icons:"
+Name: "{autodesktop}\AI PICO"; Filename: "wscript.exe"; Parameters: """{app}\launch-aipico.vbs"""; IconFilename: "{app}\icon.ico"; Comment: "AI PICO — Clinical Question Assistant"
 
 [Run]
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\install-app.ps1"""; Flags: runhidden waituntilterminated; WorkingDir: "{app}"; StatusMsg: "Installing AI PICO — downloading dependencies and building (this may take a few minutes)…"
@@ -40,3 +38,5 @@ Filename: "wscript.exe"; Parameters: """{app}\launch-aipico.vbs"""; Flags: posti
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{localappdata}\AIPICO"
+Type: files; Name: "{autodesktop}\AI PICO.lnk"
+Type: files; Name: "{group}\AI PICO.lnk"
