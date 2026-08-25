@@ -1,5 +1,6 @@
 # AI PICO - post-install: extract app, install deps, build
 $ErrorActionPreference = "Continue"
+Add-Type -AssemblyName System.Windows.Forms
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $AppDir  = "$env:LOCALAPPDATA\AIPICO"
@@ -36,12 +37,25 @@ try {
   # 2. Extract bundled app source
   $zip = Join-Path $PSScriptRoot "app-source.zip"
   if (-not (Test-Path $zip)) { throw "app-source.zip not found next to installer" }
+  $launcherSrc = Join-Path $PSScriptRoot "launch-aipico.ps1"
+
+  $tmpZip = "$env:TEMP\aipico-app-source.zip"
+  Copy-Item $zip $tmpZip -Force
+  $tmpLauncher = "$env:TEMP\aipico-launch.ps1"
+  if (Test-Path $launcherSrc) { Copy-Item $launcherSrc $tmpLauncher -Force }
+
   if (Test-Path $AppDir) { Remove-Item "$AppDir\*" -Recurse -Force -ErrorAction SilentlyContinue }
   $tmp = "$env:TEMP\aipico-extract"
   if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
-  Expand-Archive -Path $zip -DestinationPath $tmp -Force
-  $inner = Get-ChildItem $tmp -Directory | Select-Object -First 1
-  Copy-Item "$($inner.FullName)\*" $AppDir -Recurse -Force
+  Expand-Archive -Path $tmpZip -DestinationPath $tmp -Force
+  $wrapper = Get-ChildItem $tmp -Directory | Where-Object { Test-Path (Join-Path $_.FullName "package.json") } | Select-Object -First 1
+  if ($wrapper) {
+    Copy-Item "$($wrapper.FullName)\*" $AppDir -Recurse -Force
+  } else {
+    Copy-Item "$tmp\*" $AppDir -Recurse -Force
+  }
+  if (Test-Path $tmpLauncher) { Copy-Item $tmpLauncher "$AppDir\launch-aipico.ps1" -Force }
+  Remove-Item $tmpZip, $tmpLauncher -Force -ErrorAction SilentlyContinue
   Log "App extracted to $AppDir"
 
   # 3. Dependencies

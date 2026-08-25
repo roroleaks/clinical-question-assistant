@@ -32,7 +32,7 @@ Name: "{autodesktop}\AI PICO"; Filename: "powershell.exe"; Parameters: "-NoProfi
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional icons:"
 
 [Run]
-Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\install-app.ps1"""; Flags: runhidden waituntilterminated; StatusMsg: "Installing AI PICO — downloading dependencies and building (this may take a few minutes)…"
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\install-app.ps1"""; Flags: runhidden waituntilterminated; WorkingDir: "{app}"; StatusMsg: "Installing AI PICO — downloading dependencies and building (this may take a few minutes)…"
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\launch-aipico.ps1"""; Flags: postinstall skipifsilent runhidden; Description: "Launch AI PICO now"
 
 [UninstallDelete]
