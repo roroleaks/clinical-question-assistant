@@ -1,0 +1,18 @@
+AI PICO — Clinical Question Assistant
+Created by Dr Raouf Roshdy — (c) 2026, All rights reserved
+
+IMPORTANT — PLEASE READ BEFORE INSTALLING
+
+1. This software is provided for EDUCATIONAL and ACADEMIC RESEARCH purposes only.
+
+2. It is NOT a medical device and is NOT certified for clinical use or patient-care decisions.
+
+3. AI-generated content may contain errors, omissions, or outdated information.
+
+4. Always verify formulated questions, references, and evidence against original sources before any professional use.
+
+5. Do NOT enter any patient-identifiable data into this application.
+
+6. This software is provided "as is", without warranty of any kind. The author accepts no liability for any use of this software.
+
+By clicking "I Agree" below, you accept these terms and conditions.
