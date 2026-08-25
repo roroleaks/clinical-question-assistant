@@ -18,7 +18,7 @@ Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
 SetupIconFile=icon.ico
-UninstallDisplayIcon={app}\app-source.zip
+UninstallDisplayIcon={app}\icon.ico
 DisableProgramGroupPage=yes
 LicenseFile=disclaimer.txt
 
@@ -27,6 +27,7 @@ Source: "app-source.zip"; DestDir: "{app}"; Flags: ignoreversion
 Source: "install-app.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "launch-aipico.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "launch-aipico.vbs"; DestDir: "{app}"; Flags: ignoreversion
+Source: "icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\AI PICO"; Filename: "wscript.exe"; Parameters: """{app}\launch-aipico.vbs"""; IconFilename: "{app}\icon.ico"; Comment: "AI PICO — Clinical Question Assistant"
