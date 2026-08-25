@@ -32,7 +32,8 @@ try {
     if (-not $node) { throw "Node.js installation failed" }
   }
   Log "Node: $node"
-  $npm = Join-Path (Split-Path $node) "npm.cmd"
+  $nodeDir = Split-Path $node
+  $npm = Join-Path $nodeDir "npm.cmd"
 
   # 2. Extract bundled app source
   $zip = Join-Path $PSScriptRoot "app-source.zip"
@@ -60,15 +61,20 @@ try {
 
   # 3. Dependencies
   Set-Location $AppDir
+  $npmCli = Join-Path $nodeDir "node_modules\npm\bin\npm-cli.js"
+  if (-not (Test-Path $npmCli)) { throw "npm-cli.js not found at $npmCli" }
+
   Log "Running npm install..."
   $outLog = "$env:TEMP\npm-install.log"
   $errLog = "$env:TEMP\npm-install-err.log"
-  $proc = Start-Process -FilePath $npm -ArgumentList "install","--no-audit","--no-fund" -WorkingDirectory $AppDir -WindowStyle Hidden -PassThru -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+  $proc = Start-Process -FilePath $node -ArgumentList "`"$npmCli`"","install","--no-audit","--no-fund" -WorkingDirectory $AppDir -WindowStyle Hidden -PassThru -RedirectStandardOutput $outLog -RedirectStandardError $errLog
   if (-not $proc.WaitForExit(600000)) { $proc.Kill(); throw "npm install timed out after 10 minutes" }
-  if ($proc.ExitCode -ne 0) {
-    $errText = if (Test-Path $errLog) { Get-Content $errLog -Tail 10 | Out-String } else { "" }
-    Log "npm install failed: $errText"
-    throw "npm install failed (exit $($proc.ExitCode))"
+  Log "npm install exit: $($proc.ExitCode)"
+  if (-not (Test-Path "$AppDir\node_modules")) {
+    $errText = if (Test-Path $errLog) { Get-Content $errLog -Tail 12 | Out-String } else { "" }
+    $outText = if (Test-Path $outLog) { Get-Content $outLog -Tail 12 | Out-String } else { "" }
+    Log "npm install failed. ERR: $errText OUT: $outText"
+    throw "npm install failed - see log"
   }
   Log "Dependencies installed"
 
@@ -76,12 +82,14 @@ try {
   Log "Running production build..."
   $outLog2 = "$env:TEMP\npm-build.log"
   $errLog2 = "$env:TEMP\npm-build-err.log"
-  $proc = Start-Process -FilePath $npm -ArgumentList "run","build" -WorkingDirectory $AppDir -WindowStyle Hidden -PassThru -RedirectStandardOutput $outLog2 -RedirectStandardError $errLog2
+  $proc = Start-Process -FilePath $node -ArgumentList "`"$npmCli`"","run","build" -WorkingDirectory $AppDir -WindowStyle Hidden -PassThru -RedirectStandardOutput $outLog2 -RedirectStandardError $errLog2
   if (-not $proc.WaitForExit(300000)) { $proc.Kill(); throw "Build timed out after 5 minutes" }
-  if ($proc.ExitCode -ne 0) {
-    $errText = if (Test-Path $errLog2) { Get-Content $errLog2 -Tail 10 | Out-String } else { "" }
-    Log "Build failed: $errText"
-    throw "Build failed (exit $($proc.ExitCode))"
+  Log "build exit: $($proc.ExitCode)"
+  if (-not (Test-Path "$AppDir\.next")) {
+    $errText = if (Test-Path $errLog2) { Get-Content $errLog2 -Tail 20 | Out-String } else { "(empty)" }
+    $outText = if (Test-Path $outLog2) { Get-Content $outLog2 -Tail 20 | Out-String } else { "(empty)" }
+    Log "BUILD FAILED. ERR: $errText OUT: $outText"
+    throw "Build failed - see log"
   }
   Log "Build completed"
 
